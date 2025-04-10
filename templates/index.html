@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vision Shield Dashboard</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="icon" href="/static/css/img/visionshieldlogo.png">
+</head>
+<body>
+    <header class="dashboard-header">
+        <div class="logo-container">
+            <img src="/static/css/img/visionshieldlogo.png" alt="Vision Shield Logo" class="logo-img">
+            <h1 class="header-title">Vision Shield Dashboard</h1>
+        </div>
+    </header>
+
+    <main class="dashboard-container">
+        <section class="grid-section">
+            <!-- Seção da Câmera -->
+            <div class="card camera-card">
+                <h2 class="card-title">
+                    <span class="material-icons">videocam</span>
+                    Live Camera Feed
+                </h2>
+                <div class="video-container">
+                    <img src="/video_feed" id="camera-feed" alt="Live Camera Feed">
+                    <div class="camera-overlay" id="camera-status">Conectando...</div>
+                </div>
+            </div>
+
+            <!-- Seção de Alertas -->
+            <div class="card alerts-card">
+                <h2 class="card-title">
+                    <span class="material-icons">notifications</span>
+                    Recent Alerts
+                </h2>
+                <div class="alerts-container">
+                    <table id="alerts-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Type</th>
+                                <th>Confidence</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alerts-body">
+                            <!-- Alertas serão carregados via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção de Gráficos -->
+        <div class="card chart-card">
+            <div class="chart-header">
+                <h2 class="card-title">
+                    <span class="material-icons">bar_chart</span>
+                    Alert Statistics
+                </h2>
+                <div class="chart-controls">
+                    <button class="period-btn active" data-period="weekly">Weekly</button>
+                    <button class="period-btn" data-period="monthly">Monthly</button>
+                    <button class="period-btn" data-period="yearly">Yearly</button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="alerts-chart"></canvas>
+            </div>
+        </div>
+    </main>
+
+    <script src="/static/js/main.js"></script>
+    <script src="/static/js/camera.js"></script>
+    <script src="/static/js/charts.js"></script>
+</body>
+</html>
