@@ -25,33 +25,29 @@ class DataProcessor:
         }
     
     def _generate_yearly_data(self):
-        months = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dec"]
+        months = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", 
+                 "Jul", "Ago", "Set", "Out", "Nov", "Dec"]
         return {
             "labels": months,
             "data": [random.randint(150, 500) for _ in range(12)]
         }
     
     def get_data(self, period):
-        # Garante que o período solicitado existe
         return self.data.get(period, self._generate_empty_data(period))
     
     def _generate_empty_data(self, period):
-        # Retorna dados vazios se o período não existir
         return {
             "labels": [],
             "data": []
         }
     
     def update_data(self):
-        """Atualiza dados periodicamente com base nos alertas"""
-        # Atualiza dados semanais
+        """Atualiza dados periodicamente"""
         self.data["weekly"]["data"] = [max(0, x + random.randint(-3, 3)) 
-                                      for x in self.data["weekly"]["data"]]
+                                     for x in self.data["weekly"]["data"]]
         
-        # Atualiza dados mensais
         self.data["monthly"]["data"] = [max(0, x + random.randint(-10, 10)) 
-                                       for x in self.data["monthly"]["data"]]
+                                      for x in self.data["monthly"]["data"]]
         
-        # Atualiza dados anuais
         self.data["yearly"]["data"] = [max(0, x + random.randint(-20, 20)) 
-                                       for x in self.data["yearly"]["data"]]
+                                     for x in self.data["yearly"]["data"]]

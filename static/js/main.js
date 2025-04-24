@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Carrega alertas inicialmente
+    // Carrega alertas
     loadAlerts();
     
     // Atualiza alertas a cada 5 segundos
@@ -17,7 +17,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function loadAlerts() {
     fetch('/get_alerts')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) throw new Error("Erro ao carregar alertas");
+            return response.json();
+        })
         .then(alerts => {
             const tbody = document.getElementById('alerts-body');
             tbody.innerHTML = '';
@@ -29,18 +32,23 @@ function loadAlerts() {
                     <td>${alert.time}</td>
                     <td>${alert.type}</td>
                     <td>${Math.round(alert.confidence * 100)}%</td>
-                    <td><span class="alert-status ${getStatusClass(alert.status)}">${alert.status}</span></td>
+                    <td><span class="status-badge ${getStatusClass(alert.status)}">${alert.status || 'Novo'}</span></td>
                 `;
                 
                 tbody.appendChild(row);
             });
+        })
+        .catch(error => {
+            console.error("Erro ao carregar alertas:", error);
         });
 }
 
 function getStatusClass(status) {
+    if (!status) return 'status-new';
     switch(status.toLowerCase()) {
         case 'novo': return 'status-new';
         case 'revisado': return 'status-reviewed';
-        default: return 'status-false';
+        case 'falso positivo': return 'status-false';
+        default: return 'status-new';
     }
 }

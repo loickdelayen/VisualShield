@@ -7,19 +7,18 @@
     <link rel="stylesheet" href="/static/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="icon" href="/static/css/img/visionshieldlogo.png">
 </head>
 <body>
-    <header class="dashboard-header">
-        <div class="logo-container">
-            <img src="/static/css/img/visionshieldlogo.png" alt="Vision Shield Logo" class="logo-img">
-            <h1 class="header-title">Vision Shield Dashboard</h1>
-        </div>
-    </header>
+    <div class="dashboard-container">
+        <!-- Cabeçalho -->
+        <header class="dashboard-header">
+            <img src="../static/css/img/visionshieldlogo.png" alt="Vision Shield Logo" class="logo-img">
+            <h1>Vision Shield Dashboard</h1>
+        </header>
 
-    <main class="dashboard-container">
-        <section class="grid-section">
-            <!-- Seção da Câmera -->
+        <!-- Primeira Linha: Câmera e Alertas -->
+        <div class="top-section">
+            <!-- Câmera -->
             <div class="card camera-card">
                 <h2 class="card-title">
                     <span class="material-icons">videocam</span>
@@ -27,11 +26,11 @@
                 </h2>
                 <div class="video-container">
                     <img src="/video_feed" id="camera-feed" alt="Live Camera Feed">
-                    <div class="camera-overlay" id="camera-status">Conectando...</div>
+                    <div class="camera-status" id="camera-status">Conectando...</div>
                 </div>
             </div>
 
-            <!-- Seção de Alertas -->
+            <!-- Alertas Recentes -->
             <div class="card alerts-card">
                 <h2 class="card-title">
                     <span class="material-icons">notifications</span>
@@ -48,34 +47,44 @@
                             </tr>
                         </thead>
                         <tbody id="alerts-body">
-                            <!-- Alertas serão carregados via JavaScript -->
+                            <!-- Dados serão preenchidos via JavaScript -->
                         </tbody>
                     </table>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <!-- Seção de Gráficos -->
-        <div class="card chart-card">
-            <div class="chart-header">
-                <h2 class="card-title">
-                    <span class="material-icons">bar_chart</span>
-                    Alert Statistics
-                </h2>
-                <div class="chart-controls">
-                    <button class="period-btn active" data-period="weekly">Weekly</button>
-                    <button class="period-btn" data-period="monthly">Monthly</button>
-                    <button class="period-btn" data-period="yearly">Yearly</button>
-                </div>
+        <!-- Segunda Linha: Gráfico de Barras -->
+        <div class="card bar-chart-card">
+            <h2 class="card-title">
+                <span class="material-icons">bar_chart</span>
+                Alert Statistics
+            </h2>
+            <div class="chart-controls">
+                <button class="period-btn active" data-period="weekly">Weekly</button>
+                <button class="period-btn" data-period="monthly">Monthly</button>
+                <button class="period-btn" data-period="yearly">Yearly</button>
             </div>
             <div class="chart-container">
-                <canvas id="alerts-chart"></canvas>
+                <canvas id="bar-chart"></canvas>
             </div>
         </div>
-    </main>
+
+        <!-- Terceira Linha: Gráfico de Pizza -->
+        <div class="card pie-chart-card">
+            <h2 class="card-title">
+                <span class="material-icons">pie_chart</span>
+                Alert Distribution
+            </h2>
+            <div class="chart-container">
+                <canvas id="pie-chart"></canvas>
+            </div>
+        </div>
+    </div>
 
     <script src="/static/js/main.js"></script>
     <script src="/static/js/camera.js"></script>
     <script src="/static/js/charts.js"></script>
+    <script src="/static/js/pie-chart.js"></script>
 </body>
 </html>

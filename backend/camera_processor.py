@@ -37,6 +37,8 @@ class CameraProcessor:
             success, frame = self.cap.read()
             if not success:
                 break
+            
+            frame = cv2.flip(frame, 1)  # 1 = flip horizontal, 0 = vertical, -1 = ambos
                 
             # Simula detecções (remova quando implementar detecção real)
             if random.random() > 0.95:

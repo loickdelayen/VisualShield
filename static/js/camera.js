@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const cameraStatus = document.getElementById('camera-status');
     
     function updateCameraFeed() {
-        // Atualiza o timestamp para evitar cache
         const timestamp = new Date().getTime();
         cameraFeed.src = "/video_feed?t=" + timestamp;
     }
@@ -17,17 +16,17 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if (data.status === 'active') {
                     cameraStatus.textContent = "Câmera ativa";
-                    cameraStatus.style.color = "#2a9d8f";
+                    cameraStatus.style.backgroundColor = "#2a9d8f";
                     updateCameraFeed();
                 } else {
                     cameraStatus.textContent = "Câmera inativa";
-                    cameraStatus.style.color = "#e63946";
+                    cameraStatus.style.backgroundColor = "#e63946";
                 }
             })
             .catch(error => {
                 console.error("Erro ao verificar status da câmera:", error);
                 cameraStatus.textContent = "Erro de conexão";
-                cameraStatus.style.color = "#e63946";
+                cameraStatus.style.backgroundColor = "#e63946";
             });
     }
     
