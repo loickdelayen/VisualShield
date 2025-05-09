@@ -184,9 +184,49 @@ body {
     height: 450px;
 }
 
+/* Card para o gráfico de pizza */
+.pie-chart-card {
+    background: var(--white);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.pie-chart-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-3px);
+}
+
+/* Título do card */
+.pie-chart-card .card-title {
+    color: var(--primary);
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    font-weight: bold;
+    border-bottom: 2px solid var(--primary-light);
+    padding-bottom: 10px;
+}
+
+/* Container do gráfico */
 .pie-chart-card .chart-container {
     height: 500px;
+    position: relative;
+    max-width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
+
+/* Canvas do gráfico */
+.pie-chart-card canvas {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+
+
 
 /* Status */
 .status-badge {
