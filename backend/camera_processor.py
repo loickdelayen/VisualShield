@@ -2,17 +2,36 @@ import cv2
 import numpy as np
 from ultralytics import YOLO
 from datetime import datetime
-import os
 import time
+
+from utils import database
+import os
+from datetime import datetime
+
+# MySQL connection parameters
+MYSQL_HOST = 'localhost'
+MYSQL_PORT = 3306
+MYSQL_USER = 'root'
+MYSQL_PASSWORD = '12345678'
+MYSQL_DATABASE = 'VisionShield'
+
+# Initialize MySQL database connection
+conn = database.create_connection(
+    host=MYSQL_HOST,
+    port=MYSQL_PORT,
+    user=MYSQL_USER,
+    password=MYSQL_PASSWORD,
+    database=MYSQL_DATABASE
+)
 
 class CameraProcessor:
     def __init__(self):
         self.cap = self._init_video_source()
 
         # Carrega os modelos treinados
-        self.model1 = YOLO('C:/Users/switc/Downloads/VisualShield_tcc-layout (1)/VisualShield_tcc-layout/runs/detect/train/weights/best.pt')    # Capacete
-        self.model2 = YOLO('C:/Users/switc/Downloads/VisualShield_tcc-layout (1)/VisualShield_tcc-layout/runs/detect/train2/weights/best.pt')   # Luvas
-        self.model3 = YOLO('C:/Users/switc/Downloads/VisualShield_tcc-layout (1)/VisualShield_tcc-layout/runs/detect/train3/weights/best.pt')   # Óculos
+        self.model1 = YOLO('C:/TCC/runs/detect/train/weights/best.pt')    # Capacete
+        self.model2 = YOLO('C:/TCC/runs/detect/train2/weights/best.pt')   # Luvas
+        self.model3 = YOLO('C:/TCC/runs/detect/train3/weights/best.pt')   # Óculos
 
         # Cores e rótulos
         self.color1 = (0, 0, 255)     # Vermelho - Capacete
@@ -23,6 +42,40 @@ class CameraProcessor:
         self.name3 = "Oculos"
 
         self.detections_log = []  # Armazena os alertas reais detectados
+        self.conn = conn  # Database connection for saving logs
+
+    def save_detection_log_to_db(self, detection):
+        try:
+            # Parse detection info
+            date_str = detection["time"].split(" ")[0]
+            time_str = detection["time"].split(" ")[1]
+            timestamp = detection["time"]
+            filename = detection["image"]
+            detection_type = detection["type"]
+            status = detection["status"]
+
+            # Read image file as blob
+            filepath = os.path.join("saved_frames", filename)
+            with open(filepath, "rb") as f:
+                image_blob = f.read()
+
+            # Insert image blob and get image_id
+            image_id = database.insert_image(self.conn, image_blob)
+
+            # Count quantities for classes (example: count detected types)
+            hard_hat_qtn = 1.0 if detection_type == "Capacete" else 0.0
+            googles_qtn = 1.0 if detection_type == "Oculos" else 0.0
+            glooves_qtn = 1.0 if detection_type == "Luva" else 0.0
+
+            # Insert class quantities and get class_id
+            class_id = database.insert_class(self.conn, hard_hat_qtn, googles_qtn, glooves_qtn)
+
+            # Insert log record linking to class and image
+            state = "D" if status == "Detectado" else "N"
+            database.insert_log(self.conn, timestamp, state, class_id, image_id)
+
+        except Exception as e:
+            print(f"Error saving detection log to database: {e}")
 
     def _init_video_source(self):
         cap = cv2.VideoCapture(0)
@@ -55,8 +108,8 @@ class CameraProcessor:
             detections = []
 
             results1 = self.model1.predict(frame, conf=0.7, verbose=False)
-            results2 = self.model2.predict(frame, conf=0.7, verbose=False)
-            results3 = self.model3.predict(frame, conf=0.7, verbose=False)
+            results2 = self.model2.predict(frame, conf=0.8, verbose=False)
+            results3 = self.model3.predict(frame, conf=0.5, verbose=False)
 
             detections += self._draw_boxes(annotated_frame, results1, self.color1, self.name1)
             detections += self._draw_boxes(annotated_frame, results2, self.color2, self.name2)
@@ -70,12 +123,14 @@ class CameraProcessor:
                 cv2.imwrite(filepath, annotated_frame)
 
                 if not detections:
-                    self.detections_log.append({
+                    detection = {
                         "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                         "type": "Nenhum",
                         "image": filename,
                         "status": "Não detectado"
-                    })
+                    }
+                    self.detections_log.append(detection)
+                    self.save_detection_log_to_db(detection)
 
                 last_save_time = current_time
 
@@ -99,12 +154,14 @@ class CameraProcessor:
             filepath = os.path.join("saved_frames", filename)
             cv2.imwrite(filepath, frame)
 
-            self.detections_log.append({
+            detection = {
                 "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "type": label_name,
                 "image": filename,
                 "status": "Detectado"
-            })
+            }
+            self.detections_log.append(detection)
+            self.save_detection_log_to_db(detection)
 
             detections.append(label_name)
 

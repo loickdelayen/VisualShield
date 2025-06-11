@@ -1,7 +1,27 @@
 let barChart = null;
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Atualiza o gráfico inicialmente
     updateChart('weekly');
+
+    // Atualiza o gráfico a cada 5 segundos
+    setInterval(() => {
+        // Pega o período selecionado no botão ativo
+        const activeBtn = document.querySelector('.period-btn.active');
+        const period = activeBtn ? activeBtn.dataset.period : 'weekly';
+
+        updateChart(period);
+    }, 5000);
+
+    // Controle dos botões para troca de período
+    const buttons = document.querySelectorAll('.period-btn');
+    buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            buttons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            updateChart(btn.dataset.period);
+        });
+    });
 });
 
 function updateChart(period) {
@@ -20,16 +40,16 @@ function updateChart(period) {
 
 function renderBarChart(labels, data, period) {
     const ctx = document.getElementById('bar-chart').getContext('2d');
-    
+
     if (barChart) {
         barChart.destroy();
     }
-    
+
     // Gradiente para as barras
     const gradient = ctx.createLinearGradient(0, 0, 0, 400);
     gradient.addColorStop(0, 'rgba(230, 57, 70, 0.8)');
     gradient.addColorStop(1, 'rgba(230, 57, 70, 0.2)');
-    
+
     barChart = new Chart(ctx, {
         type: 'bar',
         data: {
